@@ -8,7 +8,8 @@ class BufferlessVideoCapture:
 
   def __init__(self, name):
     self.cap = cv2.VideoCapture(name)
-    self.q = Queue.Queue()
+    
+    self.q = queue.Queue()
     t = threading.Thread(target=self._reader)
     t.daemon = True
     t.start()
@@ -22,7 +23,7 @@ class BufferlessVideoCapture:
       if not self.q.empty():
         try:
           self.q.get_nowait()   # discard previous (unprocessed) frame
-        except Queue.Empty:
+        except queue.Empty:
           pass
       self.q.put(frame)
     
@@ -41,9 +42,9 @@ class Reader:
         else:
             self.capture = BufferlessVideoCapture(input)
             print("Input mode: camera stream")
-            self.capture.setAttributes(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-            self.capture.setAttributes(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-            self.capture.setAttributes(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+            #self.capture.setAttributes(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+            #self.capture.setAttributes(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+            #self.capture.setAttributes(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
     def get_frame(self):
         if self.video:

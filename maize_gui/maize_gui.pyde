@@ -3,12 +3,6 @@ add_library('serial')
 from maze import *
 from balance import *
 
-# sys.path.append(os.path.abspath('../other_sub_dir')
-# sys.path.append(os.path.abspath('../'))
-# import .. utils import *
-import sys, os
-sys.path.append(os.path.abspath(os.path.join('..')))
-import 
 
 # map will be drawn from top right to 
 maze = Maze()
@@ -28,7 +22,9 @@ def setup():
     balance.draw_balance(6, 5)
     
     # setup connection to our python code 
-    start() # this should start the other code
+    # exec(open('../main.py').read())
+
+    # start() # this should start the other code
     
     
     # setup handlers
