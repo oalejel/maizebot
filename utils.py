@@ -1,18 +1,25 @@
-
+from dataclasses import dataclass
+from enum import IntEnum
+import constants
+import numpy as np
 # using python data classes 
 @dataclass
-class pose:
+class Pose:
     x: float = 0.0
     y: float = 0.0
     vx: float = 0.0 
     vy: float = 0.0
 
-@dataclass
-class cell:
+class Cell(IntEnum):
+    FREE = 0
+    WALL = 1
+    HOLE = 2
     
 @dataclass
-class map:
-    
+class Map:
+    grid: np.ndarray = np.empty((HEIGHT_IN_CELLS, WIDTH_IN_CELLS), dtype=Cell)
+
+
 
 
 
