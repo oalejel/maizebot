@@ -7,14 +7,13 @@ from homography import *
 from video_reader import *
 import cv2
 
-def __main__(): 
+if __name__== "__main__":
     print("Warning: No GUI")
     reader = Reader(0, False)
     while True:
         img = reader.get_frame()
         cv2.imshow("img", img)
         cv2.waitKey(1)
-        print("hello")
     #start() 
 
 # this non-python main will be called by the wrapper gui 
