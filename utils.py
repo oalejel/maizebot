@@ -7,6 +7,13 @@ class pose:
     vx: float = 0.0 
     vy: float = 0.0
 
+@dataclass
+class cell:
+    
+@dataclass
+class map:
+    
+
 
 
 
