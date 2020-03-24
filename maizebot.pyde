@@ -3,12 +3,7 @@ add_library('serial')
 from maze import *
 from balance import *
 
-# sys.path.append(os.path.abspath('../other_sub_dir')
-# sys.path.append(os.path.abspath('../'))
-# import .. utils import *
-import sys, os
-sys.path.append(os.path.abspath(os.path.join('..')))
-import 
+from main import *
 
 # map will be drawn from top right to 
 maze = Maze()
