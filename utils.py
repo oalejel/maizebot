@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 import constants
 import numpy as np
+
 # using python data classes 
 @dataclass
 class Pose:
@@ -15,10 +16,6 @@ class Cell(IntEnum):
     WALL = 1
     HOLE = 2
     
-@dataclass
-class Map:
-    grid: np.ndarray = np.empty((HEIGHT_IN_CELLS, WIDTH_IN_CELLS), dtype=Cell)
-
 
 
 

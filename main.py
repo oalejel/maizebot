@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     
     print("Warning: No GUI")
-    reader = Reader(0, False)
+    reader = Reader(0, True)
     while True:
         img = reader.get_frame()
         cv2.imshow("img", img)
