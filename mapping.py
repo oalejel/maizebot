@@ -18,20 +18,34 @@ import matplotlib.pyplot as plt
 class Map:
     def __init__(self, image):
         image_corners = detect_corners(image)
+        hcrop = 10
+        wcrop = 19
+
+        precrop_height = HEIGHT_IN_CELLS + 2 * hcrop
+        precrop_width = WIDTH_IN_CELLS + 2 * wcrop
 
         warped_corners = np.array(
             [
-                [0 ,HEIGHT_IN_CELLS], # bottom-left
-                [WIDTH_IN_CELLS, HEIGHT_IN_CELLS], # bottom-right
+                [0 ,precrop_height], # bottom-left
+                [precrop_width, precrop_height], # bottom-right
+                [precrop_width, 0], # top-right
                 [0, 0], #top-left
-                [WIDTH_IN_CELLS, 0] # top-right
+
             ],
             dtype="float32")
 
         transform = cv2.getPerspectiveTransform(image_corners, warped_corners)
-        warped = cv2.warpPerspective(image, transform, image.shape[0:2])
+        warped = cv2.warpPerspective(image, transform, (precrop_width, precrop_height))
+        
         cv2.imshow("Warped", warped)
         cv2.waitKey(0)
+        print("Warped", warped.shape)
+
+        cropped = warped[hcrop: hcrop+HEIGHT_IN_CELLS, wcrop:wcrop+WIDTH_IN_CELLS]
+        
+        cv2.imshow("Cropped", cropped)
+        cv2.waitKey(0)
+        print("cropped: ", cropped.shape)
 
         # self.map = np.zeros((HEIGHT_IN_CELLS, WIDTH_IN_CELLS))
         # self.detect_walls(warped_image)
@@ -62,9 +76,6 @@ def detect_corners(img):
     
     # cv2.imshow("Mask", mask)
     # cv2.waitKey(0)
-
-
-    output = cv2.bitwise_and(img, img, mask = mask)
    
     im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
@@ -80,8 +91,8 @@ def detect_corners(img):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
 
-        # cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-        # cv2.putText(img, "centroid", (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+        cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
@@ -89,8 +100,8 @@ def detect_corners(img):
         corners[i][1] = cY
         i += 1
     print("i: ",i)
-    # cv2.imshow("Image", img)
-    # cv2.waitKey(0)
+    cv2.imshow("Image", img)
+    cv2.waitKey(0)
     return corners # bottom-left, bottom-right, top-left, top-right
 
     
