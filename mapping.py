@@ -73,7 +73,10 @@ class Map:
 
         print(len(contours))
 
-        corners = np.zeros((4 ,2), dtype="float32")
+        corners = []
+    
+
+
         i = 0
         for c in contours:
             M = cv2.moments(c)
@@ -87,13 +90,25 @@ class Map:
 
             # cv2.imshow("Image", img)
             # cv2.waitKey(0)
-            corners[i][0] = cX
-            corners[i][1] = cY
+            # corners[i][0] = cX
+            # corners[i][1] = cY
+
+            corners.append((cY, cX))
             i += 1
         print("i: ",i)
         cv2.imshow("Image", img)
         cv2.waitKey(0)
-        return corners # bottom-left, bottom-right, top-left, top-right
+        
+        sorted(corners, key=itemgetter(1), reverse=True)
+        sorted(corners[0:2], key=itemgetter(2))
+        sorted(corners[2:4], key=itemgetter(2))
+
+        corners_arr = np.zeros((4 ,2), dtype="float32")
+        for i in range(4):
+            corners_arr[i,0] = corners[i][0]
+            corners_arr[i,1] = corners[i][1]
+
+        return corners_arr # bottom-left, bottom-right, top-left, top-right
 
 
     # def detect_walls(self, img):

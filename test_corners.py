@@ -20,6 +20,7 @@ for filename in os.listdir("../sample_frames"):
     contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
 
+    i = 0
     for c in contours:
         M = cv2.moments(c)
         if M["m00"] == 0: 
@@ -27,8 +28,13 @@ for filename in os.listdir("../sample_frames"):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
 
+        i += 1
+
         cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
         cv2.putText(img, "centroid", (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
+
     cv2.imshow("Image", img)
+    cv2.waitKey(0)
+    cv2.imshow("Image", mask)
     cv2.waitKey(0)
