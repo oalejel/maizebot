@@ -59,42 +59,42 @@ class Map:
     def detect_corners(self, img):
 
 
-        # hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        # lower = np.array([155, 115, 165], dtype = "uint8") # 131, 49, 72
-        # upper = np.array([170, 180, 220], dtype = "uint8")
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        lower = np.array([155, 115, 165], dtype = "uint8") # 131, 49, 72
+        upper = np.array([170, 180, 220], dtype = "uint8")
 
-        # mask = cv2.inRange(hsv, lower, upper)
-        # mask = cv2.blur(mask, (5,5))
+        mask = cv2.inRange(hsv, lower, upper)
+        mask = cv2.blur(mask, (5,5))
 
         # cv2.imshow("Mask", mask)
         # cv2.waitKey(0)
 
-        # im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        # contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
+        im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
 
-        # print(len(contours))
+        print(len(contours))
 
-        # corners = np.zeros((4 ,2), dtype="float32")
-        # i = 0
-        # for c in contours:
-        #     M = cv2.moments(c)
-        #     if M["m00"] == 0: 
-        #         continue
-        #     cX = int(M["m10"] / M["m00"])
-        #     cY = int(M["m01"] / M["m00"])
+        corners = np.zeros((4 ,2), dtype="float32")
+        i = 0
+        for c in contours:
+            M = cv2.moments(c)
+            if M["m00"] == 0: 
+                continue
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
 
-        #     cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-        #     cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+            cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-        #     # cv2.imshow("Image", img)
-        #     # cv2.waitKey(0)
-        #     corners[i][0] = cX
-        #     corners[i][1] = cY
-        #     i += 1
-        # print("i: ",i)
+            # cv2.imshow("Image", img)
+            # cv2.waitKey(0)
+            corners[i][0] = cX
+            corners[i][1] = cY
+            i += 1
+        print("i: ",i)
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
-        # return corners # bottom-left, bottom-right, top-left, top-right
+        return corners # bottom-left, bottom-right, top-left, top-right
 
 
     def detect_walls(self, img):
@@ -139,35 +139,38 @@ class Map:
         cv2.waitKey(0)
 
     def detect_holes(self, img):
-        output = img.copy()
-        output = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
-        output = cv2.blur(output, (5,5))
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-        boundary = 40
-        output[output>boundary] = 255
-        output[output<boundary] = 0
-        # cv2.imshow("filtered", img)
-        # cv2.imwrite("filtered.png", img)
+        lower = np.array([97, 204, 115], dtype = "uint8") # 131, 49, 72
+
+
+        h = 203, 204, 198, 202, 214.3, 199.4, 202.5
+
+        s = 89, 88, 100, 83, 96, 100, 88
+
+        v = 48, 47, 64, 47, 63, 78, 68, 46
+
+        # h = 195, 215
+        # s = 80, 100
+        # v = 45, 80
+
+        upper = np.array([108, 255, 204], dtype = "uint8")
+
+        mask = cv2.inRange(hsv, lower, upper)
+
+        cv2.imshow("Mask", mask)
+        cv2.waitKey(0)
+
+        self.map[mask] = 2
+
+        print("i: ",i)
+        # cv2.imshow("Image", img)
         # cv2.waitKey(0)
-        circles = cv2.HoughCircles(output, cv2.HOUGH_GRADIENT, 1, 30, param1=1520, param2= 8, minRadius=12, maxRadius=22)
+        return holes # bottom-left, bottom-right, top-left, top-right
 
-        print(circles)
-        if circles is not None:
-            # convert the (x, y) coordinates and radius of the circles to integers
-            circles = np.round(circles[0, :]).astype("int")
-            # loop over the (x, y) coordinates and radius of the circles
-            for (x, y, r) in circles:
-                # draw the circle in the output image, then draw a rectangle
-                # corresponding to the center of the circle
-                cv2.circle(img, (x, y), r, (0, 255, 0), 4)
-                cv2.circle(img, (x, y), 2, (0, 0, 255), 3)
-                # cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-            # show the output image
-            cv2.imshow("output", img)
-            cv2.waitKey(0)
     
 def main():
-    img = cv2.imread("test_image.png")
+    img = cv2.imread("sample_frames/image1.png")
     # detect_corners(img)
     map = Map(img)
 
