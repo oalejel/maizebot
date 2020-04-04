@@ -12,7 +12,7 @@ public class Maze {
     this.frameHeight = h;
   }
 
-  public void draw_map() {
+  public void drawMap() {
     int numCols = mazeArr.get(0).size();
     int numRows = mazeArr.size();
     float scaleFactor = min(frameWidth / (float)numCols, frameHeight / (float)numRows);
@@ -58,13 +58,17 @@ public class Maze {
   }        
 
   // fake map generation
-  void make_fake_map() { 
+  void makeFakeMap() { 
     int example_width = 400;
     int example_height = 300;
     mazeArr = new ArrayList<ArrayList<Integer>>(example_height);
+    
     for (int y = 0; y < example_height; y++) {
-      mazeArr.get(y).add(example_width, 0);
+      mazeArr.add(new ArrayList<Integer>());
+      println(y);
+      println(mazeArr.size());
       for (int x = 0; x < example_width; x++) {
+        mazeArr.get(y).add(0);
         if (y < 10 || y > 290 || x < 10 || x > 390) {
           mazeArr.get(y).set(x, 1); // wall on boundaries
         }

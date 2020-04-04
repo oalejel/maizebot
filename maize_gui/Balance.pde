@@ -1,3 +1,4 @@
+
 class Balance {
   int x; 
   int y;
@@ -12,16 +13,17 @@ class Balance {
 
   void drawBalance(float h_offset, float v_offset) {
     fill(0);
-    rect(this.x, this.y, this.width_height, this.width_height);
-    float half_x = this.x + (0.5 * this.width_height);
-    float half_y = this.y + (0.5 * this.width_height);
+    rect(x, y, width_height, width_height);
+    float half_x = x + (0.5 * width_height);
+    float half_y = y + (0.5 * width_height);
     strokeWeight(1);
     stroke(255);
-    line(half_x, this.y, half_x, this.y + half_y);
-    line(this.x, half_y, this.x + this.width_height, half_y);
-    float _x = (h_offset / self.clamp) * (0.5 * self.width_height);
-    float _y = (v_offset / self.clamp) * (0.5 * self.width_height);
+    line(half_x, y, half_x, y + width_height);
+    line(x, half_y, x + width_height, half_y);
+    float _x = (h_offset / clamp) * (0.5 * width_height);
+    float _y = (v_offset / clamp) * (0.5 * width_height);
     fill(255, 255, 0);
-    circle(_x + half_x, y + half_y, 6);
+    noStroke();
+    circle(_x + half_x, _y + half_y, 6);
   }
 }
