@@ -1,41 +1,51 @@
 
 public class Maze {
   Boolean showTrace = true;
-  int mazeWidth = 0;
+  int frameWidth = 0; // the width we draw the maze width on screen. not necessarily same as array dimensions
+  int frameHeight = 0;
   int ballX = 0; 
   int ballY = 0; 
   ArrayList<ArrayList<Integer>> mazeArr;
 
-  public Maze() {
-    mazeArr = new ArrayList<Integer>(100);
+  public Maze(int w, int h) {
+    this.frameWidth = w; 
+    this.frameHeight = h;
   }
 
   public void draw_map() {
-    float scale_factor = min(self.maze_width / float(len(maze_map[0])), height / float(len(maze_map)));
+    int numCols = mazeArr.get(0).size();
+    int numRows = mazeArr.size();
+    float scaleFactor = min(frameWidth / (float)numCols, frameHeight / (float)numRows);
+
+    // loop params used to draw 
     float x = 0;
     float y = 0;
+
+    // reset drawing context 
     noStroke();
-    for (int r_index = 0; r_index < maze_map.length(); r_index++) {
-      x = 0;
-      for (int c_index = 0; c_index < row[]; c_index++) {
+
+    for (int row = 0; row < numRows; row++) {
+      for (int col = 0; col < numCols; col++) {
+        int entry = mazeArr.get(row).get(col);
         if (entry == 0) { // if floor, draw white at this pixel
-          fill(255)
+          fill(255);
         } else if (entry == 1) { // wall 
           fill(255, 0, 0);
         } else { // hole, fill with gray 
           fill(0);
-          x += scale_factor;
-          rect(x, y, scale_factor, scale_factor);
         }  
-        y += scale_factor
+        rect(x, y, scaleFactor, scaleFactor);
+        x += scaleFactor;
       }
+      // prepare for next row
+      x = 0;
+      y += scaleFactor;
     }
   } 
 
 
   void draw_controls() { 
-    global maze_width 
-      fill(32, 100, 40)
+    fill(32, 100, 40);
   }
 
   void update_map() {
@@ -49,14 +59,16 @@ public class Maze {
 
   // fake map generation
   void make_fake_map() { 
-    example_width = 400
-      maze_map = Array<int>
-      for y in range(0, 300):
-    maze_map.append([0] * example_width) # add a new row 
-      for x in range(0, example_width):
-  if y < 10 or y > 290 or x < 10 or x > 390:
-    maze_map[y][x] = 1
-    else: 
-    maze_map[y][x] = 0
+    int example_width = 400;
+    int example_height = 300;
+    mazeArr = new ArrayList<ArrayList<Integer>>(example_height);
+    for (int y = 0; y < example_height; y++) {
+      mazeArr.get(y).add(example_width, 0);
+      for (int x = 0; x < example_width; x++) {
+        if (y < 10 || y > 290 || x < 10 || x > 390) {
+          mazeArr.get(y).set(x, 1); // wall on boundaries
+        }
+      }
+    }
   }
 }
