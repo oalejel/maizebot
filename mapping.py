@@ -15,9 +15,12 @@ import utils
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from operator import itemgetter, attrgetter 
 class Map:
     def __init__(self, image):
         image_corners = self.detect_corners(image)
+
+        # change these crops to ratio of frame
         hcrop = 10
         wcrop = 19
 
@@ -49,6 +52,23 @@ class Map:
         self.map = np.zeros((HEIGHT_IN_CELLS, WIDTH_IN_CELLS))
         self.detect_holes(cropped)
         self.detect_walls(np.copy(cropped))
+
+
+        walls = np.zeros(self.map.shape)
+        walls[self.map == 1] = 1
+        cv2.imshow("Walls",walls)
+        cv2.waitKey(0)
+
+
+        holes = np.zeros(self.map.shape)
+        holes[self.map == 2] = 1
+        cv2.imshow("holes",holes) 
+        cv2.waitKey(0)
+
+        cv2.imshow("map",self.map) 
+        cv2.waitKey(0)
+
+
         
    
 
@@ -65,8 +85,8 @@ class Map:
         mask = cv2.inRange(hsv, lower, upper)
         mask = cv2.blur(mask, (5,5))
 
-        cv2.imshow("Mask", mask)
-        cv2.waitKey(0)
+        # cv2.imshow("Mask", mask)
+        # cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
@@ -85,30 +105,39 @@ class Map:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
 
-            cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-            cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-
             # cv2.imshow("Image", img)
             # cv2.waitKey(0)
             # corners[i][0] = cX
             # corners[i][1] = cY
 
-            corners.append((cY, cX))
+            corners.append((cX, cY))
             i += 1
-        print("i: ",i)
-        cv2.imshow("Image", img)
-        cv2.waitKey(0)
+        # print("i: ",i)
         
-        sorted(corners, key=itemgetter(1), reverse=True)
-        sorted(corners[0:2], key=itemgetter(2))
-        sorted(corners[2:4], key=itemgetter(2))
+
+        print(corners)
+        corners = sorted(corners, key=itemgetter(1), reverse=True)
+        corners[0:2] = sorted(corners[0:2], key=itemgetter(0))
+        corners[2:4] = sorted(corners[2:4], key=itemgetter(0), reverse=True)
+        print(corners)
+
 
         corners_arr = np.zeros((4 ,2), dtype="float32")
         for i in range(4):
-            corners_arr[i,0] = corners[i][0]
-            corners_arr[i,1] = corners[i][1]
 
-        return corners_arr # bottom-left, bottom-right, top-left, top-right
+            cX = corners[i][0]
+            cY = corners[i][1]
+            corners_arr[i,0] = cX
+            corners_arr[i,1] = cY
+
+            cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+            cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+        # cv2.imshow("Image", img)
+        # cv2.waitKey(0)
+        
+
+        return corners_arr # bottom-left, bottom-right, top-right, top-left
 
 
     # def detect_walls(self, img):
@@ -151,44 +180,49 @@ class Map:
         img[self.map == 2] = 255
         # img = cv2.blur(img, (5,5))
 
-        cv2.imshow("gray", img)
-        cv2.waitKey(0)
+        # cv2.imshow("gray", img)
+        # cv2.waitKey(0)
 
         bw_threshold = 60
         
         img[img> bw_threshold] = 255
         img[img< bw_threshold] = 0
         img = 255 - img
-        cv2.imshow("Filtered", img) 
-        cv2.waitKey(0)
+        # cv2.imshow("Filtered", img) 
+        # cv2.waitKey(0)
 
         ero0 = 2
         kernel = np.ones((ero0, ero0), np.uint8) 
         img = cv2.erode(img, kernel)
-        cv2.imshow("erosion 0", img)
-        cv2.waitKey(0)
+        # cv2.imshow("erosion 0", img)
+        # cv2.waitKey(0)
 
         dil1 = 10  
         kernel = np.ones((dil1, dil1), np.uint8) 
         img = cv2.dilate(img, kernel)
-        cv2.imshow("Dilation1", img)
-        cv2.waitKey(0)
+        # cv2.imshow("Dilation1", img)
+        # cv2.waitKey(0)
 
         ero1 = 16
         kernel = np.ones((ero1, ero1), np.uint8) 
         img = cv2.erode(img, kernel)
-        cv2.imshow("erosion 1", img)
-        cv2.waitKey(0)
+        # cv2.imshow("erosion 1", img)
+        # cv2.waitKey(0)
 
 
         dil2 = 9
         kernel = np.ones((dil2, dil2), np.uint8) 
         img = cv2.dilate(img, kernel)
-        cv2.imshow("dilation 2", img)
-        cv2.waitKey(0)
+        # cv2.imshow("dilation 2", img)
+        # cv2.waitKey(0)
 
-        low_threshold = 0
-        high_threshold = 10
+        self.map[img > 10] = 1
+
+        # cv2.imshow("map2", self.map)
+        # cv2.waitKey(0)
+
+        # low_threshold = 0
+        # high_threshold = 10
 
         # edges = cv2.Canny(img, low_threshold, high_threshold)
 
@@ -251,13 +285,13 @@ class Map:
         threshold = 10
 
         self.map[mask > 10] = 2
-        # cv2.imshow("map", self.map)
+        # cv2.imshow("map1", self.map)
         # cv2.waitKey(0)
 
 
     
 def main():
-    img = cv2.imread("sample_frames/image2.png")
+    img = cv2.imread("sample_frames/image4.png")
     # detect_corners(img)
     map = Map(img)
 
