@@ -17,7 +17,8 @@ import cv2
 import matplotlib.pyplot as plt
 from operator import itemgetter, attrgetter 
 class Map:
-    def __init__(self, image):
+
+    def warp_map(self, image):
         image_corners = self.detect_corners(image)
 
         # change these crops to ratio of frame
@@ -44,11 +45,15 @@ class Map:
         # print("Warped", warped.shape)
 
         cropped = warped[hcrop: hcrop+HEIGHT_IN_CELLS, wcrop:wcrop+WIDTH_IN_CELLS]
+        return cropped
+
+    def __init__(self, image):
         
         # cv2.imshow("Cropped", cropped)
         # cv2.waitKey(0)
         # print("cropped: ", cropped.shape)
 
+        cropped = self.warp_map(image)
         self.map = np.zeros((HEIGHT_IN_CELLS, WIDTH_IN_CELLS))
         self.detect_holes(cropped)
         self.detect_walls(np.copy(cropped))
@@ -56,27 +61,20 @@ class Map:
 
         walls = np.zeros(self.map.shape)
         walls[self.map == 1] = 1
-        cv2.imshow("Walls",walls)
-        cv2.waitKey(0)
+        # cv2.imshow("Walls",walls)
+        # cv2.waitKey(0)
 
 
         holes = np.zeros(self.map.shape)
         holes[self.map == 2] = 1
-        cv2.imshow("holes",holes) 
-        cv2.waitKey(0)
+        # cv2.imshow("holes",holes) 
+        # cv2.waitKey(0)
 
-        cv2.imshow("map",self.map) 
-        cv2.waitKey(0)
-
-
-        
-   
-
-
+        # cv2.imshow("map",self.map) 
+        # cv2.waitKey(0)
 
         
     def detect_corners(self, img):
-
 
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         lower = np.array([155, 115, 165], dtype = "uint8") # 131, 49, 72
@@ -130,8 +128,8 @@ class Map:
             corners_arr[i,0] = cX
             corners_arr[i,1] = cY
 
-            cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-            cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            # cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+            # cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
@@ -288,12 +286,48 @@ class Map:
         # cv2.imshow("map1", self.map)
         # cv2.waitKey(0)
 
+    def detect_ball(self, image):
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        lower = np.array([19, 53, 86], dtype = "uint8")
+        upper = np.array([29, 176, 161], dtype = "uint8")
 
+        #H: 43.4 45 42.7 41.1 48.3 44.6 43.1 46.4 44.5 43.3 41.1 43.3       MIN 39.2 MAX 57.3
+        #S: 52 54 49 57 57 59 61 61 69 66 57 69         MIN 21 MAX 69
+        #V: 63 52 47 51 57 57 46 48 49 51 53 49         MIN 34 MAX 63
+
+        mask = cv2.inRange(hsv, lower, upper)
+
+        dil1 = 3  
+        kernel = np.ones((dil1, dil1), np.uint8) 
+        mask = cv2.dilate(mask, kernel)
+
+        mask = cv2.blur(mask, (5,5))
+
+        cv2.imshow("ball mask", mask)
+        cv2.waitKey(0)
+
+        im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        # contours = sorted(contours, key = cv2.contourArea, reverse = True)[:1]
+        
+        M = cv2.moments(contours[0])
+        
+        cX = int(M["m10"] / M["m00"])
+        cY = int(M["m01"] / M["m00"])
+
+        cv2.circle(image, (cX, cY), 2, (255, 255, 255), -1)
+
+        cv2.imshow("Image", image)
+        cv2.waitKey(0)
+
+        print("ball center: ", (cX, cY))
+        return (cY, cX)
     
 def main():
-    img = cv2.imread("sample_frames/image4.png")
+    img = cv2.imread("sample_frames/image5.png")
     # detect_corners(img)
     map = Map(img)
+    print(map.detect_ball(img))
+    
 
 if __name__ == "__main__":
     main()

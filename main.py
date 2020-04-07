@@ -5,8 +5,9 @@
 #from homography import * 
 #from utils import *
 from video_reader import *
+from diagnostics import *
 import cv2
-import time # remove this
+
 
 
 
@@ -17,22 +18,24 @@ if __name__ == "__main__":
     #f.close()
 
     
-    print("Warning: No GUI")
+    gui = MazeGUI() # set to None if no gui desired
     reader = Reader(0, True)
+    mapping = Map()
+    diagnostics = Diagnostics()
 
-    _frames = 0 
-    _last_update_time = time.time()
+    # framerate diagnostics
+    # _frames = 0 
+    # _last_update_time = time.time()
+
 
     while True:
         img = reader.get_frame()
         
         # cv2.imshow("img", img)
         # cv2.waitKey(1)
-        _frames += 1
-        if _frames > 59:
-            print("frame rate: {} fps".format(_frames / (time.time() - _last_update_time)))
-            _frames = 0
-            _last_update_time = time.time()
+        # tell diagnostics that we have received a new camera frame. comment if no diagnostics desired
+        diagnostics.newFrame()
+        
 
 #    reader = Reader(0, False)
 #    while True:
