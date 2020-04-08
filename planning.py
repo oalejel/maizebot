@@ -3,7 +3,7 @@ class Planner():
         self.maze  = maze
 
         # TODO: Maxpool map, store 
-
+    # https://gist.github.com/jamiees2/5531924
     class Node:
         def __init__(self, point):
             self.point = point
