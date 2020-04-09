@@ -54,7 +54,7 @@ class Maze:
         # print("cropped: ", cropped.shape)
 
         cropped = self.warp_map(image)
-        self.map = np.zeros((HEIGHT_IN_CELLS, WIDTH_IN_CELLS))
+        self.map = np.zeros((HEIGHT_IN_CELLS, WIDTH_IN_CELLS), dtype="uint8")
         self.detect_holes(cropped)
         self.detect_walls(np.copy(cropped))
         self.time = 0
@@ -62,6 +62,14 @@ class Maze:
         self.ball_y = 0
         self.ball_vx = 0
         self.ball_vy = 0
+
+        self.goal_x = 260
+        self.goal_y = 480
+
+        # cv2.circle(cropped, (self.goal_x, self.goal_y), 2, (255, 255, 255), -1)
+        # cv2.imshow("goal", cropped) 
+        # cv2.waitKey(0)
+
 
 
         # walls = np.zeros(self.map.shape)
@@ -94,7 +102,7 @@ class Maze:
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
 
-        print("{} contours".format(len(contours)))
+        # print("{} contours".format(len(contours)))
 
         corners = []
     
@@ -292,6 +300,8 @@ class Maze:
         # cv2.waitKey(0)
 
     def detect_ball(self, image, time):
+
+        image = self.warp_map(image)
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         lower = np.array([19, 53, 86], dtype = "uint8")
         upper = np.array([29, 176, 161], dtype = "uint8")
@@ -308,8 +318,8 @@ class Maze:
 
         mask = cv2.blur(mask, (5,5))
 
-        cv2.imshow("ball mask", mask)
-        cv2.waitKey(0)
+        # cv2.imshow("ball mask", mask)
+        # cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         # contours = sorted(contours, key = cv2.contourArea, reverse = True)[:1]
@@ -326,12 +336,12 @@ class Maze:
         self.ball_x = x
         self.ball_y = y
 
-        # cv2.circle(image, (cX, cY), 2, (255, 255, 255), -1)
+        cv2.circle(image, (self.ball_x, self.ball_y), 3, (255, 255, 255), -1)
 
         # cv2.imshow("Image", image)
         # cv2.waitKey(0)
 
-        print("ball center: ", (cX, cY))
+        # print("ball center: ", (self.ball_x, self.ball_y))
         return self.ball_y, self.ball_x, self.ball_vy, self.ball_vx
     
 def main():

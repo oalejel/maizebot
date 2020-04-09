@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from enum import IntEnum
 import constants
 import numpy as np
-
 # using python data classes 
 @dataclass
 class Pose:
