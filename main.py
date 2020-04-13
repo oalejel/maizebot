@@ -1,5 +1,5 @@
 
-#from mapping import * 
+from mapping import * 
 #from serial import * 
 #from controls import * 
 #from homography import * 
@@ -24,11 +24,12 @@ def main():
     # all variables declared above will be visible to the thread calling run_maizebot
     # warning: some shared variables may require a lock
     def run_maizebot():
-        controller = Controller()
+        #run planner
+        controller = Controller(path)
 
         while True:
             img = reader.get_frame()
-            current_location = mapping.detect_ball()
+            current_location = mapping.detect_ball(img)
             gui.updateBall(current_location[0], current_location[1])
             controller.update_ball(current_location[0], current_location[1])
             # cv2.imshow("img", img)
