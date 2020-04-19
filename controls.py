@@ -15,7 +15,7 @@ class StepperPID:
         # tune these parameters in the constructor
         self.kP = kP
         self.kI = kI
-        self.kD = kD 
+        self.kD = kD
         
     # pass in new errors for updated angles
     def update(self, error):

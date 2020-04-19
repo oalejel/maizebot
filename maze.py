@@ -16,6 +16,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from operator import itemgetter, attrgetter 
+import time
 class Maze:
 
     def warp_map(self, image):
@@ -388,10 +389,10 @@ class Maze:
     
     
 def main():
-    img = cv2.imread("sample_frames/image5.png")
+    img = cv2.imread("sample_frames/image9.png")
     # detect_corners(img)
     map = Maze(img)
-    print(map.detect_ball(img))
+    print(map.detect_ball(img, time.time()))
     
 
 if __name__ == "__main__":

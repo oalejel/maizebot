@@ -1,5 +1,5 @@
 
-from mapping import * 
+from maze import Maze 
 #from serial import * 
 #from controls import * 
 #from homography import * 
@@ -8,6 +8,7 @@ from video_reader import *
 from diagnostics import *
 import cv2
 import threading
+import time
 
 GUI_ENABLED = True # try disabling to compare performance. may need to fix some thread task queueing
 
@@ -18,18 +19,23 @@ def main():
 
     # Read first frame to generate map
     img = reader.get_frame()
-    mapping = Map(img)
+    maze = Maze(img)
     gui = MazeGUI(mapping.map) if GUI_ENABLED else None
     # code encapsulating all non-gui processing, placed on another thread
     # all variables declared above will be visible to the thread calling run_maizebot
     # warning: some shared variables may require a lock
     def run_maizebot():
-        #run planner
-        controller = Controller(path)
+        # prepare path planner to construct a path, construct the controller, and start localization->control loop
+        maze.detect_ball(img, 1)
+        planner = Planner(maze)
+        planner.plan_path()
+        planner.aggregate_path()
+        planner.draw_path() # note: make gui show this path
+        controller = Controller(planner.path)
 
         while True:
             img = reader.get_frame()
-            current_location = mapping.detect_ball(img)
+            current_location = maze.detect_ball(img, time.time())
             gui.updateBall(current_location[0], current_location[1])
             controller.update_ball(current_location[0], current_location[1])
             # cv2.imshow("img", img)
