@@ -1,4 +1,6 @@
-from time import time #using system time for now, we might want to change that
+from time import time, sleep #using system time for now, we might want to change that
+import struct
+import serial
 
 
 # PID controller for a single stepper motor, issuing relative angle changes
@@ -50,6 +52,9 @@ class Controller:
         # tune these parameters. not necessary for motors to have same ks
         self.pid_x = StepperPID(kP = 0.1, kI = 0.0, kD = 0.0)
         self.pid_y = StepperPID(kP = 0.1, kI = 0.0, kD = 0.0)
+        self.ser = serial.Serial('/dev/ttyACM0', 9600) # Establish the connection on a specific port
+        sleep(2)
+        
 
     
     def update_ball(self, x, y):
@@ -100,7 +105,13 @@ class Controller:
         roty = self.pid_y.update(target_vy - vy)
             
         # PSEUDOCODE for telling serial to move motors 
-        serial.motor_update(rotx, roty)
+        dirx = 0
+        diry = 0
+        if rotx > 0:
+            dirx = 1
+        if roty > 0:
+            diry = 1  
+        self.ser.write(struct.pack('>BBBB',diry, abs(roty), dirx, abs(rotx)))
         
 
             
