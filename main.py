@@ -1,5 +1,7 @@
 
 from maze import Maze 
+from controls import Controller
+from planning import Planner
 #from serial import * 
 #from controls import * 
 #from homography import * 
@@ -26,7 +28,7 @@ def main():
     # warning: some shared variables may require a lock
     def run_maizebot():
         # prepare path planner to construct a path, construct the controller, and start localization->control loop
-        maze.detect_ball(img, 1)
+        maze.detect_ball(img, 1) #pylint is saying "Using variable 'img' before assignment" here
         planner = Planner(maze)
         planner.plan_path()
         planner.aggregate_path()
@@ -37,7 +39,7 @@ def main():
             img = reader.get_frame()
             current_location = maze.detect_ball(img, time.time())
             gui.updateBall(current_location[0], current_location[1])
-            controller.update_ball(current_location[0], current_location[1])
+            controller.update_ball(current_location)
             # cv2.imshow("img", img)
             # cv2.waitKey(1)
             # tell diagnostics that we have received a new camera frame. comment if no diagnostics desired

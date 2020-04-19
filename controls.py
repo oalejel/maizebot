@@ -1,6 +1,5 @@
-from time import time, sleep #using system time for now, we might want to change that
+from time import time, sleep
 import struct
-import serial
 
 
 # PID controller for a single stepper motor, issuing relative angle changes
@@ -37,11 +36,8 @@ class Controller:
     def __init__(self, path): 
         self.path = path
         self.path_idx = 0
-        self.x = 0.0
-        self.y = 0.0
         self.prev_target_vx = 0.0
         self.prev_target_vy = 0.0
-        self.time = time()
         
         #params
         self.pos_tolerance = 5 #in pixels
@@ -57,21 +53,14 @@ class Controller:
         
 
     
-    def update_ball(self, x, y):
+    def update_ball(self, update):
         # start_coord = self.path_steps[self.step_idx - 1] # ex: (0, 4) means checking cell 0 and cell 4
-        curr_time = time()
-        delta_t = curr_time - self.time
-        self.time = curr_time
-        vx = (x - self.x)/delta_t
-        vy = (y - self.y)/delta_t
-        self.x = x
-        self.y = y
 
         curr_goal = self.path[self.path_idx]
-        delta_x = curr_goal[0] - x
-        delta_y = curr_goal[1] - y
+        delta_x = curr_goal[0] - update[0]
+        delta_y = curr_goal[1] - update[1]
 
-        if abs(vx) + abs(vy) < 2 * self.v_tolerance and abs(delta_x) + abs(delta_y) < 2 * self.pos_tolerance: #stopped at goal and ready to move on to next one
+        if abs(update[2]) + abs(update[3]) < 2 * self.v_tolerance and abs(delta_x) + abs(delta_y) < 2 * self.pos_tolerance: #stopped at goal and ready to move on to next one
             self.path_idx += 1
             self.pid_x.reset()
             self.pid_y.reset()
@@ -101,12 +90,9 @@ class Controller:
             self.pid_y.reset()
 
         #might need to adjust signs here
-        rotx = self.pid_x.update(target_vx - vx)
-        roty = self.pid_y.update(target_vy - vy)
+        rotx = self.pid_x.update(target_vx - update[2])
+        roty = self.pid_y.update(target_vy - update[3])
             
-        # PSEUDOCODE for telling serial to move motors 
-        dirx = 0
-        diry = 0
         if rotx > 0:
             dirx = 1
         if roty > 0:
