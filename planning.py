@@ -102,7 +102,7 @@ class Planner():
             current.visited = True
             #color it on the map
             map_copy[current.point[1], current.point[0]] = [0,0,255]
-            print("Current cost: ", current.G + current.H)
+            # print("Current cost: ", current.G + current.H)
             #If it is the item we want, retrace the path and return it
             if current.point == goal.point:
                 print("PATH FOUND")
@@ -226,8 +226,61 @@ class Planner():
             map_copy[y,x] = [0,0,255]
         cv2.imshow("path", map_copy)
         cv2.waitKey(0)
-        
+    
 
+    def is_valid_line(self, start_cell, goal_cell, tolerance):
+        x1, y1 = start_cell
+        x2, y2 = goal_cell
+
+        x1 = x1 // self.scale
+        x2 = x2 // self.scale
+        y1 = y1 // self.scale
+        y2 = y2 // self.scale
+
+        theta = np.arctan2(y2-y1, x2-x1)
+
+        dx = x2 - x1
+        dy = y2 - y1
+
+        error = -1
+
+        inc_var = x1
+        cond_var = y1
+        inc_var_limit = x2
+        inc = int(dx / np.fabs(dx)) if dx != 0 else 0
+        cond_inc = int(dy/np.fabs(dy)) if dy != 0 else 0
+        derror = np.fabs(dy/dx) if dx != 0 else 0
+
+        if np.fabs(dx) < np.fabs(dy):
+            inc_var = y1
+            cond_var = x1
+            inc_var_limit = y2
+            inc = int(dy/np.fabs(dy)) if dy != 0 else 0
+            cond_inc = int(dx/np.fabs(dx)) if dx != 0 else 0
+            derror = 1/derror if derror != 0 else 0
+        
+        while np.abs(inc_var - inc_var_limit) > 0:
+            hole_distance = self.hole_distance_grid[inc_var][cond_var] if np.fabs(dx) < np.fabs(dy) else self.hole_distance_grid[cond_var][inc_var]
+            wall_distance = self.wall_distance_grid[inc_var][cond_var] if np.fabs(dx) < np.fabs(dy) else self.wall_distance_grid[cond_var][inc_var]
+            if hole_distance < tolerance or wall_distance < tolerance:
+                return False
+            error += derror
+            if error > 0:
+                cond_var += cond_inc
+                error += -1
+            inc_var += inc
+        return True
+
+    def aggregate_path(self, tolerance=5):
+        aggregated_path = []
+        aggregated_path.append(self.path[0])
+        for i in range(1, len(self.path)-1):
+            if not self.is_valid_line(aggregated_path[-1], self.path[i], tolerance):
+                aggregated_path.append(self.path[i])
+
+        aggregated_path.append(self.path[-1])
+        self.path = aggregated_path
+        return aggregated_path
 
 
 def main():
@@ -237,6 +290,7 @@ def main():
     maze.detect_ball(img, 1)
     planner = Planner(maze)
     print(planner.plan_path())
+    planner.aggregate_path()
     planner.draw_path()
     
 
