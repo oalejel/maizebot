@@ -65,7 +65,7 @@ class MazeGUI(Frame):
 	def setMap(map_data):
 		pass 
 	
-	def updateBall(x, y): 
+	def updateBall(self, x, y): 
 		self.trace.append(x, y, time.time())
 #		self.canvas.create_
 		
