@@ -62,7 +62,7 @@ class MazeGUI(Frame):
 		canvas.pack(fill=BOTH, expand=2)
 		self.canvas = canvas 
 		
-	def setMap(map_data):
+	def setMap(self, map_data):
 		pass 
 	
 	def updateBall(self, x, y): 
@@ -86,8 +86,9 @@ class MazeGUI(Frame):
 		
 	# called when we want to refresh the map????
 	def draw_map(self):
-		Image.
-		maze_img = ImageTk.PhotoImage(image=Image.fromarray(self.maze_array), mode="RGB")
+		# Image.
+		print(self.maze_array.dtype)
+		maze_img = ImageTk.PhotoImage(image=Image.fromarray(self.maze_array.astype(np.uint8)))
 		self.maze_img = maze_img # avoid garbage collection
 		self.canvas.create_image(0, 0, image=maze_img, anchor=NW)
 #		print("here")
@@ -131,8 +132,8 @@ class MazeGUI(Frame):
 			
 
 # test map
-array = np.zeros((100,50))
-array[0:40] = 125
+# array = np.zeros((100,50))
+# array[0:40] = 125
 
-# comment out
-ex = MazeGUI(array)
+# # comment out
+# ex = MazeGUI(array)

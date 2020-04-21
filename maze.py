@@ -94,14 +94,15 @@ class Maze:
     def detect_corners(self, img):
 
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower = np.array([155, 115, 165], dtype = "uint8") # 131, 49, 72
-        upper = np.array([175, 180, 220], dtype = "uint8")
+        lower = np.array([3, 130, 130], dtype = "uint8") # 131, 49, 72
+        upper = np.array([20, 200, 200], dtype = "uint8")
 
         mask = cv2.inRange(hsv, lower, upper)
         mask = cv2.blur(mask, (5,5))
-
-        # cv2.imshow("Mask", mask)
-        # cv2.waitKey(0)
+        cv2.imwrite("img.png", img)
+        cv2.imwrite("hsv.png", hsv)
+        cv2.imwrite("mask.png", mask)
+        cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
@@ -320,14 +321,22 @@ class Maze:
         kernel = np.ones((dil1, dil1), np.uint8) 
         mask = cv2.dilate(mask, kernel)
 
+        #cv2.imshow("mask", mask)
+        #cv2.imshow("hsv", hsv)
+        #cv2.waitKey(0)
+
         mask = cv2.blur(mask, (5,5))
 
         # cv2.imshow("ball mask", mask)
         # cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        # contours = sorted(contours, key = cv2.contourArea, reverse = True)[:1]
-        
+        if len(contours) == 0:
+            cv2.imshow("hHv", hsv)
+            cv2.imshow("mMsk", mask)
+            cv2.waitKey(0)
+        contours = sorted(contours, key = cv2.contourArea, reverse = True)[:1]
+        #c = max(contours, key = cv2.contourArea)
         M = cv2.moments(contours[0])
         
         x = int(M["m10"] / M["m00"])
@@ -352,9 +361,11 @@ class Maze:
     def detect_goal(self, image):
 
         image = self.warp_map(image)
+        #cv2.imshow("mask", image)
+        #cv2.waitKey(0)
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        lower = np.array([7, 185, 150], dtype = "uint8")
-        upper = np.array([11, 210, 195], dtype = "uint8")
+        lower = np.array([150, 100, 100], dtype = "uint8")
+        upper = np.array([180, 210, 195], dtype = "uint8")
 
         #H: 16 20 21       MIN 15 MAX 22
         #S: 75 81        MIN 74 MAX 82
@@ -381,8 +392,8 @@ class Maze:
 
         cv2.circle(image, (self.goal_x, self.goal_y), 3, (255, 255, 255), -1)
 
-        # cv2.imshow("Image", image)
-        # cv2.waitKey(0)
+        cv2.imshow("Image", image)
+        cv2.waitKey(0)
 
         # print("goal center: ", (self.goal_x, self.goal_y))
         return self.goal_x, self.goal_y
