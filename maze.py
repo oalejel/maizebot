@@ -98,16 +98,27 @@ class Maze:
         upper = np.array([20, 200, 200], dtype = "uint8")
 
         mask = cv2.inRange(hsv, lower, upper)
-        mask = cv2.blur(mask, (5,5))
-        cv2.imwrite("img.png", img)
-        cv2.imwrite("hsv.png", hsv)
-        cv2.imwrite("mask.png", mask)
-        cv2.waitKey(0)
+
+        ero0 = 3
+        kernel = np.ones((ero0, ero0), np.uint8) 
+        mask = cv2.erode(mask, kernel)
+
+        # bw_threshold = 200
+        # mask[mask < bw_threshold] = 0 
+
+
+        # mask = cv2.blur(mask, (5,5))
+        # cv2.imwrite("img.png", img)
+        # cv2.imwrite("hsv.png", hsv)
+        # cv2.imwrite("mask.png", mask)
+        # img[mask != 0] = [255, 255, 255]
+        # cv2.imshow("mask", mask)
+        # cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
 
-        # print("{} contours".format(len(contours)))
+        # print("contours: ", len(contours))
 
         corners = []
     
@@ -146,8 +157,8 @@ class Maze:
             corners_arr[i,0] = cX
             corners_arr[i,1] = cY
 
-            # cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-            # cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        #     cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+        #     cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
@@ -400,7 +411,7 @@ class Maze:
     
     
 def main():
-    img = cv2.imread("sample_frames/image9.png")
+    img = cv2.imread("sample_frames/image11.png")
     # detect_corners(img)
     map = Maze(img)
     print(map.detect_ball(img, time.time()))
