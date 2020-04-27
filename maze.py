@@ -108,7 +108,7 @@ class Maze:
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
 
-        # print("{} contours".format(len(contours)))
+        # print("contours: ", len(contours))
 
         corners = []
     
@@ -152,8 +152,8 @@ class Maze:
             corners_arr[i,0] = cX
             corners_arr[i,1] = cY
 
-            # cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
-            # cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        #     cv2.circle(img, (cX, cY), 5, (255, 255, 255), -1)
+        #     cv2.putText(img, str(i), (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
@@ -409,7 +409,7 @@ class Maze:
     
     
 def main():
-    img = cv2.imread("sample_frames/image9.png")
+    img = cv2.imread("sample_frames/image11.png")
     # detect_corners(img)
     map = Maze(img)
     print(map.detect_ball(img, time.time()))
