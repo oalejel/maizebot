@@ -73,6 +73,7 @@ class Maze:
         # cv2.circle(cropped, (self.goal_x, self.goal_y), 2, (255, 255, 255), -1)
         # cv2.imshow("goal", cropped) 
         # cv2.waitKey(0)
+        self.writer = cv2.VideoWriter('outpy2.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 30, (700,500))
 
 
 
@@ -94,15 +95,15 @@ class Maze:
     def detect_corners(self, img):
 
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower = np.array([3, 130, 130], dtype = "uint8") # 131, 49, 72
-        upper = np.array([20, 200, 200], dtype = "uint8")
+        lower = np.array([7, 130, 130], dtype = "uint8") # 131, 49, 72
+        upper = np.array([15, 200, 170], dtype = "uint8")
 
         mask = cv2.inRange(hsv, lower, upper)
         mask = cv2.blur(mask, (5,5))
-        cv2.imwrite("img.png", img)
-        cv2.imwrite("hsv.png", hsv)
-        cv2.imwrite("mask.png", mask)
-        cv2.waitKey(0)
+        #cv2.imshow("img.png", img)
+        #cv2.imshow("hsv.png", hsv)
+        #cv2.imshow("mask.png", mask)
+        #cv2.waitKey(0)
 
         im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key = cv2.contourArea, reverse = True)[:4]
@@ -139,6 +140,11 @@ class Maze:
 
 
         corners_arr = np.zeros((4 ,2), dtype="float32")
+        if len(corners) < 4:
+            cv2.imshow("img.png", img)
+            cv2.imshow("hsv.png", hsv)
+            cv2.imshow("mask.png", mask)
+            cv2.waitKey(0)
         for i in range(4):
 
             cX = corners[i][0]
@@ -271,14 +277,16 @@ class Maze:
     def detect_holes(self, img):
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-        lower = np.array([97, 204, 115], dtype = "uint8")
-        upper = np.array([108, 255, 204], dtype = "uint8")
+        lower = np.array([90, 160, 80], dtype = "uint8")
+        upper = np.array([110, 255, 150], dtype = "uint8")
 
         mask = cv2.inRange(hsv, lower, upper)
+
         # mask = cv2.blur(mask, (5,5))
 
-        # cv2.imshow("Mask", mask)
-        # cv2.waitKey(0)
+        #cv2.imshow("Mask", mask)
+        #cv2.imshow("hsv", hsv)
+        #cv2.waitKey(0)
 
 
         dil1 = 12
@@ -307,6 +315,7 @@ class Maze:
     def detect_ball(self, image, time):
 
         image = self.warp_map(image)
+        self.writer.write(image)
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         lower = np.array([19, 53, 86], dtype = "uint8")
         upper = np.array([29, 176, 161], dtype = "uint8")
@@ -392,8 +401,8 @@ class Maze:
 
         cv2.circle(image, (self.goal_x, self.goal_y), 3, (255, 255, 255), -1)
 
-        cv2.imshow("Image", image)
-        cv2.waitKey(0)
+        #cv2.imshow("Image", image)
+        #cv2.waitKey(0)
 
         # print("goal center: ", (self.goal_x, self.goal_y))
         return self.goal_x, self.goal_y

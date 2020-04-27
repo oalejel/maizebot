@@ -41,14 +41,13 @@ class Controller:
         self.prev_target_vy = 0.0
         
         #params
-        self.pos_tolerance = 40 #in pixels
-        self.v_tolerance = 5 #in px/sec
-        self.target_v = 3 #in px/sec
-
+        self.pos_tolerance = 10 #in pixels
+        self.v_tolerance = 10 #in px/sec
+        self.target_v = 2.5 #in px/sec
 
         # tune these parameters. not necessary for motors to have same ks
         self.pid_x = StepperPID(kP = 1, kI = 0.0, kD = 0.0)
-        self.pid_y = StepperPID(kP = 0.1, kI = 0.0, kD = 0.0)
+        self.pid_y = StepperPID(kP = 1, kI = 0.0, kD = 0.0)
         self.ser = serial.Serial('/dev/ttyACM0', 9600) # Establish the connection on a specific port
         sleep(2)
         
@@ -58,11 +57,13 @@ class Controller:
         # start_coord = self.path_steps[self.step_idx - 1] # ex: (0, 4) means checking cell 0 and cell 4
 
         curr_goal = self.path[self.path_idx]
-        delta_x = curr_goal[0] - update[0]
-        delta_y = curr_goal[1] - update[1]
+        delta_x = curr_goal[0] - update[1]
+        delta_y = curr_goal[1] - update[0]
+        #print(curr_goal[0], update[0], curr_goal[1], update[1])
         print("dx={}, dy={}, target pos: ({},{})".format(delta_x, delta_y, curr_goal[0], curr_goal[1]))
 
-        if abs(update[2]) + abs(update[3]) < 2 * self.v_tolerance and abs(delta_x) + abs(delta_y) < 2 * self.pos_tolerance: #stopped at goal and ready to move on to next one
+        #if abs(update[2]) + abs(update[3]) < 2 * self.v_tolerance and abs(delta_x) + abs(delta_y) < 2 * self.pos_tolerance: #stopped at goal and ready to move on to next one
+        if abs(delta_x) + abs(delta_y) < 2 * self.pos_tolerance:
             self.path_idx += 1
             print("Moving to subpath at index {}".format(self.path_idx))
             self.pid_x.reset()
@@ -96,22 +97,22 @@ class Controller:
         rotx = self.pid_x.update(target_vx - update[2])
         roty = self.pid_y.update(target_vy - update[3])
 
-        dirx = 0
-        diry = 1    
+        dirx = 1
+        diry = 0
         if rotx > 0:
-            dirx = 1
+            dirx = 0
         if roty > 0:
-            diry = 0
+            diry = 1
         rotx = abs(rotx)
         roty = abs(roty)
-        if(rotx > 5):
-            rotx = 5
-        if roty > 5:
-            roty = 5
+        if(rotx > 2):
+            rotx = 2
+        if roty > 2:
+            roty = 2
 
-        print(diry, int(abs(roty)), dirx, int(abs(rotx)))
+        #print(diry, int(abs(roty)), dirx, int(abs(rotx)))
         
-        self.ser.write(struct.pack('>BBBB',dirx, int(abs(rotx)), diry, int(abs(roty))))
+        self.ser.write(struct.pack('>BBBB',diry, int(abs(roty)), dirx, int(abs(rotx))))
         
 
             

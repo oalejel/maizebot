@@ -91,9 +91,9 @@ class Planner():
         count = 0
         while open_heap:
             count += 1
-            if count%1000 ==0:
-                cv2.imshow("goal", map_copy)
-                cv2.waitKey(1)
+            #if count%1000 ==0:
+                #cv2.imshow("goal", map_copy)
+                #cv2.waitKey(1)
             #Find the item in the open set with the lowest G + H score, remove the item from the open set
 
             current = heappop(open_heap)
@@ -219,13 +219,15 @@ class Planner():
         self.path = self.astar(start, goal, map_copy)
         return self.path
 
-    def draw_path(self):
-        map_copy = np.copy(self.maze.map)*50
-        map_copy = cv2.cvtColor(map_copy, cv2.COLOR_GRAY2BGR) 
-        for x,y in self.path:
-            map_copy[y,x] = [0,0,255]
-        cv2.imshow("path", map_copy)
-        cv2.waitKey(0)
+    def draw_path(self, use_imshow=True):
+        if use_imshow:
+            map_copy = np.copy(self.maze.map)*50
+            map_copy = cv2.cvtColor(map_copy, cv2.COLOR_GRAY2BGR) 
+            for x,y in self.path:
+                map_copy[y,x] = [0,0,255]
+            cv2.imshow("path", map_copy)
+            cv2.waitKey(0)
+        return self.path
     
 
     def is_valid_line(self, start_cell, goal_cell, tolerance):
