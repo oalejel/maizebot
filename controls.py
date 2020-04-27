@@ -93,7 +93,6 @@ class Controller:
             self.prev_target_vy = target_vy
             self.pid_y.reset()
 
-        #might need to adjust signs here
         rotx = self.pid_x.update(target_vx - update[2])
         roty = self.pid_y.update(target_vy - update[3])
 
@@ -109,8 +108,6 @@ class Controller:
             rotx = 2
         if roty > 2:
             roty = 2
-
-        #print(diry, int(abs(roty)), dirx, int(abs(rotx)))
         
         self.ser.write(struct.pack('>BBBB',diry, int(abs(roty)), dirx, int(abs(rotx))))
         

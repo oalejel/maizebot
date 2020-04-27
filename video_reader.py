@@ -42,9 +42,6 @@ class Reader:
         else:
             self.capture = BufferlessVideoCapture(input)
             print("Input mode: camera stream")
-            #self.capture.setAttributes(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-            #self.capture.setAttributes(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-            #self.capture.setAttributes(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
     def get_frame(self):
         if self.video:

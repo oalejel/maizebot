@@ -15,37 +15,6 @@ void setup() {
   Serial.println("Ready"); // print "Ready" once
 }
 void loop() {
-//  digitalWrite(dirPin1,HIGH); // Enables the motor to move in a particular direction
-//  digitalWrite(dirPin2,HIGH); // Enables the motor to move in a particular direction
-//  // Makes 200 pulses for making one full cycle rotation
-//  for(int x = 0; x < 20; x++) {
-//    digitalWrite(stepPin1,HIGH); 
-//    digitalWrite(stepPin2,HIGH); 
-//    delayMicroseconds(700); 
-//    digitalWrite(stepPin1,LOW); 
-//    digitalWrite(stepPin2,LOW); 
-//    delayMicroseconds(700); 
-//  }
-//  delay(5000); // One second delay
-//  
-//  digitalWrite(dirPin1,LOW); //Changes the rotations direction
-//  digitalWrite(dirPin2,LOW); //Changes the rotations direction
-//  // Makes 400 pulses for making two full cycle rotation
-//  for(int x = 0; x < 20; x++) {
-//    digitalWrite(stepPin1,HIGH);
-//    digitalWrite(stepPin2,HIGH);
-//    delayMicroseconds(700);
-//    digitalWrite(stepPin1,LOW);
-//    digitalWrite(stepPin2,LOW);
-//    delayMicroseconds(700);
-//  }
-//  delay(5000);
-//  moveMotor(0, 20, 1);
-//  moveMotor(1, 20, 1);
-//  delay(500);
-//  moveMotor(0, 20, 0);
-//  moveMotor(1, 20, 0);
-//  delay(500);
 
   if(Serial.available() >= 4){
     // fill array

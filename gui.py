@@ -1,4 +1,3 @@
-#from tkinter import Tk, Canvas, Frame, BOTH
 from tkinter import *
 import time
 import numpy as np
@@ -7,29 +6,18 @@ from numpy import asarray
 import math
 import threading
 
-# Able to visualize map, updated whenever updat emap is called
-# Can show and hide trace with key command 
-
-# public interface variables:
-# public interface methods:
-
 class MazeGUI(Frame): 
 	
 	def key(self, event):
 		if (event.char == 't'):
-#			self.show_trace = not self.show_trace
 			print("toggle show_trace")
 
 	def callback(self, event):
 		pass
-#		self.canvas.focus_set()
-#		print("clicked at", event.x, event.y)
 
 	def __init__(self, maze_array):
 		super().__init__()
 		
-#		self.show_trace = False
-#		self.trace = list() # pairs of (x, y, time)
 		
 		self.maze_array = maze_array # save np.ndarray representing maze
 		
@@ -39,14 +27,13 @@ class MazeGUI(Frame):
 		PANEL_PADDING = 20
 		self.scale_factor = math.ceil(MINIMUM_HEIGHT / maze_array.shape[0])
 		self.canvas_h = self.scale_factor * self.maze_array.shape[0]
-		self.canvas_w = self.scale_factor * self.maze_array.shape[1]# + PANEL_WIDTH
+		self.canvas_w = self.scale_factor * self.maze_array.shape[1]
 		self.labels = {}
 		
 		self.initUI() # prepare canvas
 		
 		# bind keys for toggles
 		self.canvas.bind("<Key>", self.key)
-#		self.canvas.bind("<Button-1>", self.) # for mouse clicks
 
 		# add new helpers to canvas object 
 		def _create_circle(self, x, y, r, **kwargs):
@@ -54,7 +41,6 @@ class MazeGUI(Frame):
 		Canvas.create_circle = _create_circle
 
 	def run(self):
-		# warning: may need to put this on a separate thread
 		self.master.mainloop()
 
 	def initUI(self):
@@ -74,7 +60,6 @@ class MazeGUI(Frame):
 
 			
 	def update_ball(self, x, y): 
-#		self.trace.append((x, y, time.time()))
 		if self.pinball is None:
 			self.pinball = self.canvas.create_circle(x, y, 20, fill="#00F", outline="")
 		else: 
@@ -117,8 +102,6 @@ class MazeGUI(Frame):
 		self.canvas.create_image(0, 0, image=self.maze_img, anchor=NW)
 
 	def update_label(self, name, text):
-#		if len(text) < 30:
-#			text += ("_") * (30 - len(text))
 		if name not in self.labels: 
 			w = Label(self.master, text=text, width=20)
 			w.pack(anchor=NE, side="right", padx=5) 
@@ -127,99 +110,3 @@ class MazeGUI(Frame):
 		else:
 			self.labels[name].configure(text=text) 
 		print(len(text))
-
-"""
-# comment the testing code out 
-def main(): 
-	
-	# test map
-	array = np.ones((500,700))
-	array[20:480, 20:680] = 0
-	
-	gui = MazeGUI(array)
-	
-	def simulate_maizebot(): 
-		
-#		time.sleep(4) # testing something out 
-#		print(gui) # confirm that we have acces to the gui 
-		x = 40
-		animate_right = True
-		while 1:
-			gui.update_label("m1theta", "Motor 1 theta: {}".format(x))
-			gui.update_label("m2theta", "Motor 2 theta: {}".format(x**2))
-			time.sleep(1 / 60)
-			if animate_right: 
-				x += 2
-				if x >= 200:
-					animate_right = False
-			else:
-				x -= 2
-				if x < 40:
-					animate_right = True
-			gui.update_ball(x, 50)
-	
-	thread = threading.Thread(target=simulate_maizebot, args=())
-	thread.start()
-		
-	# run the gui on main
-	gui.run()
-	
-	
-	thread.join()
-
-main()
-
-
-
-
-
-
-Multithreading testing:
-	
-
-
-class Test: 
-	def __init__(self): 
-		self.foo = 50
-		
-	def print_foo(self):
-		print(self.foo)
-		self.foo = self.foo + 1
-
-def run_maizebot(): 
-	x = 0
-	while x != 1001: 
-		x = x + 2 
-		print(x)
-
-	
-
-def main(): 
-	t = Test()
-	# test map
-	array = np.ones((500,700))
-	array[20:480, 20:680] = 0
-	
-	t.print_foo()
-	print("first")
-	def do_stuff(): 
-		time.sleep(4)
-		t.print_foo()
-		print("second")
-		print("--- IM PRINTING {} ---".format(array.shape))
-	
-	thread = threading.Thread(target=do_stuff, args=())
-#	thread = threading.Thread(target=run_maizebot, args=())
-	thread.start()   
-	
-	t.print_foo()
-	print("third")
-	
-	# comment out
-	ex = MazeGUI(array, t)
-
-main()
-
-
-
-"""

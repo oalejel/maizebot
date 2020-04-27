@@ -2,17 +2,13 @@ from maze import Maze
 from controls import Controller
 from planning import Planner
 from gui import MazeGUI
-#from serial import * 
-#from controls import * 
-#from homography import * 
-#from utils import *
 from video_reader import *
 from diagnostics import *
 import cv2
 import threading
 import time
 
-GUI_ENABLED = True # try disabling to compare performance. may need to fix some thread task queueing
+GUI_ENABLED = True
 
 def main(): 
     # prepare higher level objects    
@@ -29,18 +25,14 @@ def main():
     
     # code encapsulating all non-gui processing, placed on another thread
     # all variables declared above will be visible to the thread calling run_maizebot
-    # warning: some shared variables may require a lock
     def run_maizebot(img):
         # prepare path planner to construct a path, construct the controller, and start localization->control loop
-        maze.detect_ball(img, 1) #pylint is saying "Using variable 'img' before assignment" here
+        maze.detect_ball(img, 1)
         #planner = Planner(maze)
         #planner.plan_path()
         #planner.aggregate_path()
-        #path = planner.draw_path(use_imshow=False) # note: make gui show this path
-        #path = [(25,30),(15,238),(55, 238),(272,143),(272, 323), (10, 300), (105, 380), (15, 480),(165, 480),(145, 360),(245, 360), (215, 440), (335, 440), (450, 285)]
         path = [(25,30),(15,238),(55, 238),(272,143),(272, 323), (10, 300), (105, 380), (15, 480),(165, 480),(245, 360), (335, 440), (450, 285),
                 (315, 323),(315, 180),(560,120), (430,20), (680, 20), (680, 115), (600, 150),(680, 250), (600,325), (680, 480), (580, 480),(500, 370), (500, 480), (210, 480)]
-        #path = [(25,30),(230,25)]
         controller = Controller(path)
         gui.set_path(path)
 
@@ -51,8 +43,6 @@ def main():
             gui.update_ball(current_location[1], current_location[0])
             controller.update_ball(current_location)
             gui.set_subpath_idx(controller.path_idx)
-            # cv2.imshow("img", img)
-            # cv2.waitKey(1)
             # tell diagnostics that we have received a new camera frame. comment if no diagnostics desired
             diagnostics.newFrame()
 
